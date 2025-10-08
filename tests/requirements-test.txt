@@ -1,0 +1,32 @@
+# Document Q&A Agent Test Requirements
+
+# Core testing framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.1
+pytest-asyncio>=0.21.1
+
+# Test utilities
+factory-boy>=3.3.0
+faker>=19.3.1
+responses>=0.23.3
+
+# Performance testing
+pytest-benchmark>=4.0.0
+pytest-xdist>=3.3.1
+
+# Code quality
+flake8>=6.0.0
+black>=23.7.0
+isort>=5.12.0
+mypy>=1.5.0
+
+# Coverage reporting
+coverage>=7.3.0
+codecov>=2.1.13
+
+# Testing specific dependencies
+httpx>=0.24.1  # For async HTTP testing
+aiofiles>=23.2.1  # For async file operations testing
+freezegun>=1.2.2  # For datetime mocking
+betamax>=0.8.1  # For HTTP interaction recording

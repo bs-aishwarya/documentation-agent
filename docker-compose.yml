@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  document-agent:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - VECTOR_STORE_TYPE=${VECTOR_STORE_TYPE:-chroma}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./data:/app/data
+      - ./documents:/app/documents
+      - ./logs:/app/logs
+      - ./downloads:/app/downloads
+    restart: unless-stopped
+    
+  # Optional: Redis for caching (future enhancement)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    
+  # Optional: Monitoring with Prometheus (future enhancement)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  prometheus_data:

@@ -1,0 +1,169 @@
+# Configuration file for Document Q&A AI Agent
+
+# LLM Configuration
+llm:
+  # Primary LLM provider: "openai" or "gemini"
+  provider: "openai"
+  
+  # OpenAI Configuration
+  openai:
+    api_key: "your-openai-api-key-here"
+    model: "gpt-4-turbo-preview"
+    temperature: 0.1
+    max_tokens: 4000
+    
+  # Google Gemini Configuration
+  gemini:
+    api_key: "your-gemini-api-key-here"
+    model: "gemini-pro"
+    temperature: 0.1
+    max_tokens: 4000
+
+# Document Processing Configuration
+document_processing:
+  # Supported file types
+  supported_formats: ["pdf", "docx", "txt"]
+  
+  # Maximum file size (in MB)
+  max_file_size: 100
+  
+  # Text chunking parameters
+  chunk_size: 1000
+  chunk_overlap: 200
+  
+  # OCR settings for scanned documents
+  ocr_enabled: true
+  ocr_language: "eng"
+  
+  # Image and table extraction
+  extract_images: true
+  extract_tables: true
+  extract_equations: true
+
+# Vector Store Configuration
+vector_store:
+  # Vector database type: "chroma", "faiss", or "pinecone"
+  type: "chroma"
+  
+  # ChromaDB settings
+  chroma:
+    persist_directory: "storage/vectordb"
+    collection_name: "documents"
+    
+  # FAISS settings
+  faiss:
+    index_path: "storage/faiss_index"
+    
+  # Embedding model
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  embedding_dimension: 384
+
+# Query Processing Configuration
+query:
+  # Maximum number of relevant chunks to retrieve
+  max_relevant_chunks: 5
+  
+  # Similarity threshold for relevance
+  similarity_threshold: 0.7
+  
+  # Response generation settings
+  max_response_length: 2000
+  include_sources: true
+  
+  # Query types and their specific settings
+  query_types:
+    direct_lookup:
+      enabled: true
+    summarization:
+      enabled: true
+      max_summary_length: 500
+    data_extraction:
+      enabled: true
+      structured_output: true
+
+# ArXiv Integration
+arxiv:
+  enabled: true
+  max_results: 10
+  download_papers: true
+  download_directory: "documents/arxiv"
+
+# Storage Configuration
+storage:
+  # Base directory for all storage
+  base_directory: "storage"
+  
+  # Document storage
+  documents_directory: "documents"
+  processed_directory: "storage/processed"
+  
+  # Cache settings
+  cache_enabled: true
+  cache_directory: "storage/cache"
+  cache_expiry_days: 30
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  file: "logs/document_agent.log"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  rotation: "10 MB"
+  retention: "1 month"
+
+# Performance Configuration
+performance:
+  # Async processing
+  enable_async: true
+  max_concurrent_requests: 10
+  
+  # Batch processing
+  batch_size: 100
+  
+  # Memory management
+  max_memory_usage: "4GB"
+  
+  # Rate limiting
+  rate_limit:
+    requests_per_minute: 60
+    requests_per_hour: 1000
+
+# Security Configuration
+security:
+  # API key encryption
+  encrypt_api_keys: false
+  
+  # Input validation
+  validate_inputs: true
+  sanitize_queries: true
+  
+  # File upload restrictions
+  allowed_file_extensions: [".pdf", ".docx", ".txt"]
+  scan_uploads: true
+
+# UI Configuration (for web interface)
+ui:
+  # Interface type: "streamlit", "gradio", or "fastapi"
+  type: "streamlit"
+  
+  # Server settings
+  host: "localhost"
+  port: 8501
+  
+  # Appearance
+  theme: "light"
+  title: "Document Q&A AI Agent"
+  
+  # Features
+  enable_file_upload: true
+  enable_arxiv_search: true
+  max_file_uploads: 10
+
+# Development Configuration
+development:
+  debug: false
+  reload: true
+  testing: false
+  
+  # Mock services for testing
+  mock_llm: false
+  mock_embeddings: false
