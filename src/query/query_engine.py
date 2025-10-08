@@ -567,6 +567,11 @@ class QueryProcessor:
 
         # Clean up formatting artifacts but otherwise return model output as-is
         response = self._clean_response(response)
+        
+        # Check if response is blank or too short
+        if not response or len(response.strip()) < 10:
+            logger.warning("LLM generated blank or very short response. Model may be too weak or prompt too complex.")
+            response = "Unable to generate an answer. This may be due to: (1) the LLM model being too small (try a larger model or switch to OpenAI/Gemini), (2) missing API keys, or (3) the query being outside the document scope. Please check your configuration and try again."
 
         # Calculate confidence score
         confidence = self._calculate_confidence(query, response, context)

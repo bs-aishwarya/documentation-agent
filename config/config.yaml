@@ -27,9 +27,9 @@ document_processing:
   # Maximum file size (in MB)
   max_file_size: 100
   
-  # Text chunking parameters
-  chunk_size: 1000
-  chunk_overlap: 200
+  # Text chunking parameters (increased for better context per chunk)
+  chunk_size: 1500
+  chunk_overlap: 300
   
   # OCR settings for scanned documents
   ocr_enabled: true
@@ -63,8 +63,8 @@ query:
   # Maximum number of relevant chunks to retrieve
   max_relevant_chunks: 5
   
-  # Similarity threshold for relevance
-  similarity_threshold: 0.7
+  # Similarity threshold for relevance (lowered to 0.3 for better recall with normalized embeddings)
+  similarity_threshold: 0.3
   
   # Response generation settings
   max_response_length: 2000

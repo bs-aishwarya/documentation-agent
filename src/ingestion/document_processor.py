@@ -404,12 +404,14 @@ class DocumentExtractor:
         return chunks
     
     def _split_text(self, text: str, chunk_size: int, overlap: int) -> List[str]:
-        """Split text into overlapping chunks."""
+        """Split text into overlapping chunks with improved sentence boundary detection."""
         if not text:
             return []
         
-        # Clean and normalize text
-        text = re.sub(r'\s+', ' ', text).strip()
+        # Clean and normalize text but preserve paragraph breaks
+        text = re.sub(r' +', ' ', text)  # collapse multiple spaces
+        text = re.sub(r'\n{3,}', '\n\n', text)  # max 2 newlines
+        text = text.strip()
         
         if len(text) <= chunk_size:
             return [text]
@@ -421,29 +423,44 @@ class DocumentExtractor:
             end = start + chunk_size
             
             if end >= len(text):
-                chunks.append(text[start:])
+                chunks.append(text[start:].strip())
                 break
             
             # Try to break at a sentence boundary
             chunk = text[start:end]
             
-            # Look for sentence endings near the end of the chunk
-            last_sentence_end = max(
-                chunk.rfind('. '),
-                chunk.rfind('! '),
-                chunk.rfind('? '),
-                chunk.rfind('\n\n')
-            )
+            # Look for sentence endings near the end of the chunk (search last 30% of chunk)
+            search_start = max(0, len(chunk) - int(chunk_size * 0.3))
+            search_region = chunk[search_start:]
             
-            if last_sentence_end > chunk_size * 0.5:  # Only break if we find a good boundary
-                chunk = text[start:start + last_sentence_end + 1]
-                start = start + last_sentence_end + 1 - overlap
+            # Find last occurrence of sentence-ending punctuation
+            last_period = search_region.rfind('. ')
+            last_question = search_region.rfind('? ')
+            last_exclaim = search_region.rfind('! ')
+            last_para = search_region.rfind('\n\n')
+            
+            best_break = max(last_period, last_question, last_exclaim, last_para)
+            
+            if best_break > 0:
+                # Found a sentence boundary in the search region
+                actual_pos = search_start + best_break + 1  # +1 to include the punctuation
+                chunk = text[start:start + actual_pos].strip()
+                start = start + actual_pos - overlap
             else:
-                start = end - overlap
+                # No good break found, try to at least break on a space
+                last_space = chunk.rfind(' ')
+                if last_space > chunk_size * 0.7:  # only if space is in the last 30%
+                    chunk = text[start:start + last_space].strip()
+                    start = start + last_space - overlap
+                else:
+                    # Hard break at chunk_size
+                    chunk = text[start:end].strip()
+                    start = end - overlap
             
-            chunks.append(chunk.strip())
+            if chunk:
+                chunks.append(chunk)
         
-        return [chunk for chunk in chunks if chunk.strip()]
+        return [c for c in chunks if c and len(c.strip()) > 50]  # filter out very short chunks
     
     def _find_page_for_chunk(self, chunk_text: str, pages: List[Dict]) -> Optional[int]:
         """Find which page a chunk belongs to."""
